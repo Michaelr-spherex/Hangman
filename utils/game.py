@@ -1,6 +1,9 @@
 import typer
 
 def take_guess(player: int, guessed_letters: set) -> str:
+    """
+    Handle player input
+    """
     is_valid_guess = False
     guess = ""
     while not is_valid_guess:
@@ -14,6 +17,9 @@ def take_guess(player: int, guessed_letters: set) -> str:
     return guess
 
 def handle_guess(player: int, guessed_letters: set, players_score: dict[int:int], word_indices: dict[str:list[int]], guess: str, guessed_word: list[str]) -> str:
+    """
+    Determine if player guess is correct or not
+    """
     guessed_letters.add(guess)
     if word_indices.get(guess):
         players_score[player] += len(word_indices[guess])
@@ -25,9 +31,15 @@ def handle_guess(player: int, guessed_letters: set, players_score: dict[int:int]
     return guessed_word
 
 def check_completed_word(word_indices: dict[str:list[int]], guessed_letters: set) -> bool:
+    """
+    Check all letters in word have been guessed
+    """
     return all(letter in guessed_letters for letter in word_indices)
 
 def display_score(players_score: dict[int:int]):
+    """
+    Display the final score of the game
+    """
     winner_score = max(players_score.values())
     winner_name = []
     for player, points in players_score.items():
