@@ -2,7 +2,7 @@ import typer
 
 def take_guess(player: int, guessed_letters: set) -> str:
     """
-    Handle player input
+    Handle player guess input
     """
     is_valid_guess = False
     guess = ""
@@ -16,13 +16,28 @@ def take_guess(player: int, guessed_letters: set) -> str:
             is_valid_guess = True
     return guess
 
-def handle_guess(player: int, guessed_letters: set, players_score: dict[int:int], word_indices: dict[str:list[int]], guess: str, guessed_word: list[str]) -> str:
+def enter_num_of_players()->int:
+    """
+    Handle num of players input
+    """
+    is_valid_num = False
+    num_of_players = 0
+    while not is_valid_num:
+        try:
+            num_of_players = int(input(f"How many players will be playing?"))
+            is_valid_num = True
+        except:
+              typer.echo("Incorrect input, Please enter the number of players that will be playing")
+              
+    return num_of_players            
+
+def handle_guess(player: int, guessed_letters: set, players: list[int:dict[str:str|int]], word_indices: dict[str:list[int]], guess: str, guessed_word: list[str]) -> str:
     """
     Determine if player guess is correct or not
     """
     guessed_letters.add(guess)
     if word_indices.get(guess):
-        players_score[player] += len(word_indices[guess])
+        players[player]["score"] += len(word_indices[guess])
         for i in word_indices[guess]:
             guessed_word[i] = guess
         typer.echo("Correct guess!")
@@ -30,22 +45,16 @@ def handle_guess(player: int, guessed_letters: set, players_score: dict[int:int]
         typer.echo("Incorrect guess!")
     return guessed_word
 
-def check_completed_word(word_indices: dict[str:list[int]], guessed_letters: set) -> bool:
-    """
-    Check all letters in word have been guessed
-    """
-    return all(letter in guessed_letters for letter in word_indices)
-
-def display_score(players_score: dict[int:int]):
+def display_score(players: list[int:dict[str:str|int]]):
     """
     Display the final score of the game
     """
-    winner_score = max(players_score.values())
-    winner_name = []
-    for player, points in players_score.items():
-        if winner_score == points:
-            winner_name.append(player)
-        typer.echo(f"Player {player + 1}: {points} points")
+    winner_score = max(player["score"] for player in players)
+    winner_names = []
+    for player in players:
+        if player["score"] == winner_score:
+            winner_names.append(player["name"])
+        typer.echo(f"{player["name"]}: {player["score"]} points")
     
-    for winner in winner_name:
-        typer.echo(f"Player {winner + 1} Won!")
+    for winner in winner_names:
+        typer.echo(f"{winner} Won!")
